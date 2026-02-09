@@ -37,28 +37,40 @@ async function initDatabase() {
     const schemaPath = join(__dirname, '..', 'schema.sql');
     const schema = readFileSync(schemaPath, 'utf8');
 
-    // Split by semicolons and filter out empty statements
-    const statements = schema
-      .split(';')
-      .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'));
+    console.log('📝 Executing schema...\n');
 
-    console.log(`📝 Executing ${statements.length} SQL statements...\n`);
+    // Remove comments and split into proper SQL statements
+    const lines = schema.split('\n');
+    let currentStatement = '';
+    const statements = [];
 
-    for (const statement of statements) {
-      // Skip comments
-      if (statement.startsWith('--')) continue;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      // Skip comment-only lines
+      if (trimmed.startsWith('--') || trimmed === '') continue;
 
+      currentStatement += ' ' + line;
+
+      // If line ends with semicolon (and isn't in middle of a statement), it's complete
+      if (trimmed.endsWith(';')) {
+        statements.push(currentStatement.trim());
+        currentStatement = '';
+      }
+    }
+
+    console.log(`Executing ${statements.length} SQL statements...\n`);
+
+    // Execute each statement
+    for (const stmt of statements) {
       try {
-        await db.execute(statement);
-        // Extract table name from CREATE TABLE statement
-        const match = statement.match(/CREATE\s+(?:TABLE|INDEX)(?:\s+IF\s+NOT\s+EXISTS)?\s+(\w+)/i);
+        await db.execute(stmt);
+        const match = stmt.match(/CREATE\s+(?:TABLE|INDEX)(?:\s+IF\s+NOT\s+EXISTS)?\s+(\w+)/i);
         if (match) {
           console.log(`✅ Created: ${match[1]}`);
         }
       } catch (err) {
-        console.error(`❌ Error executing statement:`, err.message);
-        console.error(`Statement: ${statement.substring(0, 100)}...`);
+        console.error(`❌ Error:`, err.message);
+        console.error(`Statement: ${stmt.substring(0, 80)}...`);
       }
     }
 
