@@ -1,0 +1,38 @@
+{
+  "name": "mcp-authkit-vercel",
+  "version": "0.1.0",
+  "description": "OAuth 2.1 gateway for MCP servers — Vercel Edge Functions + Turso",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "db:init": "node scripts/init-db.js"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.0",
+    "vercel": "^33.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "oauth",
+    "vercel-edge-functions",
+    "model-context-protocol",
+    "pkce",
+    "authorization-server",
+    "rfc9728",
+    "rfc8414",
+    "rfc7591",
+    "turso",
+    "libsql"
+  ],
+  "license": "MIT",
+  "author": "OpZero.sh (https://opzero.sh)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpZero-sh/mcp-authkit-vercel"
+  }
+}

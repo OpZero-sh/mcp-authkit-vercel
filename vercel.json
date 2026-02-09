@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/auth/[...route].js": {
+      "runtime": "edge"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "/api/auth/.well-known/oauth-authorization-server"
+    }
+  ]
+}
