@@ -78,8 +78,16 @@ export default async function handler(request) {
   const url = new URL(request.url);
   const method = request.method;
 
-  // Extract path from catch-all route parameter
-  const path = url.pathname.replace('/api/auth', '');
+  // Extract path - we're at /api/*, need to handle /api/auth/* paths
+  let path = url.pathname.replace('/api', '');
+
+  // If not an /auth/* path, return 404
+  if (!path.startsWith('/auth')) {
+    return jsonResponse({ error: 'not_found', message: 'Use /api/auth endpoints' }, 404);
+  }
+
+  // Strip /auth prefix to match route handlers
+  path = path.replace('/auth', '');
 
   // CORS preflight
   if (method === 'OPTIONS') {
